@@ -138,6 +138,10 @@ public class LockFair implements Runnable {
 
     /**
      * 交替打印 1 —— 100， 不使用 ReentranLock 公平锁;
+     *
+     *  notify(); 与 condition#signal() 有同样的作用，但是condition更有利于线程之间的通信，
+     *  调用更加灵活
+     *
      */
     public void print() {
 
@@ -244,8 +248,8 @@ public class LockFair implements Runnable {
 
         LockFair lockFairTest = new LockFair();
 
-//        lockFairTest.printUsingCondition2();
-        lockFairTest.printUsingCondition();
+        lockFairTest.printUsingCondition2();
+//        lockFairTest.printUsingCondition();
 
 //        lockFairTest.print();
 
