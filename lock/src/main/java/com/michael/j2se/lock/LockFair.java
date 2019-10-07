@@ -44,23 +44,19 @@ public class LockFair implements Runnable {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
 
-        Runnable runnable  = new Runnable() {
+        Runnable runnable  = () -> {
 
-            @Override
-            public void run() {
+            while (currentIndex3 <= 100) {
+                lock.lock();
+                condition.signal();
+                System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
 
-                while (currentIndex3 <= 100) {
-                    lock.lock();
-                    condition.signal();
-                    System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
-
-                    try {
-                        condition.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    lock.unlock();
+                try {
+                    condition.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                lock.unlock();
             }
         };
         Thread t1 = new Thread(runnable);
@@ -88,7 +84,7 @@ public class LockFair implements Runnable {
                 System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
 
                 try {
-//                    condition1.await();
+//                    condition1.await();   // 这个 await() 调用了多次，需要 singnal 多次
                     condition2.signal();
                     condition3.await();
                 } catch (InterruptedException e) {
@@ -248,7 +244,8 @@ public class LockFair implements Runnable {
 
         LockFair lockFairTest = new LockFair();
 
-        lockFairTest.printUsingCondition2();
+//        lockFairTest.printUsingCondition2();
+        lockFairTest.printUsingCondition();
 
 //        lockFairTest.print();
 
