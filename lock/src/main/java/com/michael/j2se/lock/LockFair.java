@@ -1,6 +1,8 @@
 package com.michael.j2se.lock;
 
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -14,6 +16,8 @@ public class LockFair implements Runnable {
     public static int currentIndex = 0;
 
     public static int currentIndex2 = 0;
+
+    public static int currentIndex3 = 0;
 
     @Override
     public void run() {
@@ -29,6 +33,110 @@ public class LockFair implements Runnable {
                 lock.unlock();
             }
         }
+    }
+
+
+    /**
+     * 使用 Condition 进行控制
+     */
+    public void printUsingCondition() {
+
+        Lock lock = new ReentrantLock();
+        Condition condition = lock.newCondition();
+
+        Runnable runnable  = new Runnable() {
+
+            @Override
+            public void run() {
+
+                while (currentIndex3 <= 100) {
+                    lock.lock();
+                    condition.signal();
+                    System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
+
+                    try {
+                        condition.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    lock.unlock();
+                }
+            }
+        };
+        Thread t1 = new Thread(runnable);
+        Thread t2 = new Thread(runnable);
+        t1.start();
+        t2.start();
+
+    }
+
+
+    /**
+     * 使用 Condition 进行控制 3 个线程交替打印
+     */
+    public void printUsingCondition2() {
+
+        Lock lock = new ReentrantLock();
+        Condition condition1 = lock.newCondition();
+        Condition condition2 = lock.newCondition();
+        Condition condition3 = lock.newCondition();
+
+        Runnable runnable1  = () -> {
+            while (currentIndex3 <= 100) {
+                lock.lock();
+                condition1.signal();
+                System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
+
+                try {
+//                    condition1.await();
+                    condition2.signal();
+                    condition3.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                lock.unlock();
+            }
+        };
+
+        Runnable runnable2  = () -> {
+            while (currentIndex3 <= 100) {
+                lock.lock();
+                condition2.signal();
+                System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
+
+                try {
+                    condition1.await();
+//                    condition2.await();
+                    condition3.signal();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                lock.unlock();
+            }
+        };
+
+        Runnable runnable3  = () -> {
+            while (currentIndex3 <= 100) {
+                lock.lock();
+                condition3.signal();
+                System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
+
+                try {
+                    condition1.signal();
+                    condition2.await();
+//                    condition3.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                lock.unlock();
+            }
+        };
+        Thread t1 = new Thread(runnable1);
+        Thread t2 = new Thread(runnable2);
+        Thread t3 = new Thread(runnable3);
+        t1.start();
+        t2.start();
+        t3.start();
     }
 
 
@@ -139,6 +247,8 @@ public class LockFair implements Runnable {
     public static void main(String []args) {
 
         LockFair lockFairTest = new LockFair();
+
+        lockFairTest.printUsingCondition2();
 
 //        lockFairTest.print();
 
