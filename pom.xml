@@ -80,5 +80,6 @@
 		<module>guava</module>
         <module>disruptor</module>
         <module>thread</module>
+        <module>queue</module>
     </modules>
 </project>

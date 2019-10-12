@@ -1,6 +1,7 @@
 package com.michael.j2se.lock;
 
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -159,7 +160,9 @@ public class LockFair implements Runnable {
 
                         try {
                             if (currentIndex2 <= 100) {
+                                System.out.println(Thread.currentThread().getName() + " start wait");
                                 wait();
+                                System.out.println(Thread.currentThread().getName() + " end wait");
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -248,10 +251,10 @@ public class LockFair implements Runnable {
 
         LockFair lockFairTest = new LockFair();
 
-        lockFairTest.printUsingCondition2();
+//        lockFairTest.printUsingCondition2();
 //        lockFairTest.printUsingCondition();
 
-//        lockFairTest.print();
+        lockFairTest.print();
 
 //        Thread t1 = new Thread(lockFairTest);
 //        t1.start();
