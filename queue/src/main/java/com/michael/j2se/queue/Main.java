@@ -61,6 +61,15 @@ public class Main {
             }
         }).start();
 
+        // 添加多个线程消费
+        new Thread(() -> {
+            try {
+                main.customer();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
 
         // 开始提供
         new Thread(() -> {

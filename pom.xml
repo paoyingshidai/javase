@@ -81,5 +81,6 @@
         <module>disruptor</module>
         <module>thread</module>
         <module>queue</module>
+        <module>string</module>
     </modules>
 </project>
