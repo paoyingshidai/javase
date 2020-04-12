@@ -24,7 +24,7 @@ public class MyCompletableFuture {
 
         thenCompose();
 
-//        applyToEither();
+        applyToEither();
 
         exceptionally();
 
