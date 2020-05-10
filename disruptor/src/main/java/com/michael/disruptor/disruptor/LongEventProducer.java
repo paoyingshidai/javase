@@ -1,16 +1,29 @@
 package com.michael.disruptor.disruptor;
 
+import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.RingBuffer;
 
 import java.nio.ByteBuffer;
 
 public class LongEventProducer {
 
-    private final RingBuffer<LongEvent> ringBuffer;
+    private final RingBuffer ringBuffer;
 
-    public LongEventProducer(RingBuffer<LongEvent> ringBuffer) {
+    EventTranslatorOneArg translatorOneArg = StringEventProducerWithTranslator.TRANSLATOR;
+
+    public LongEventProducer(RingBuffer ringBuffer) {
         this.ringBuffer = ringBuffer;
     }
+
+
+    /**
+     * 使用消息转换器
+     * @param byteBuffer
+     */
+    public void onDataTranslate(ByteBuffer byteBuffer) {
+        ringBuffer.publishEvent(translatorOneArg, byteBuffer);
+    }
+
 
     /**
      * onData用来发布事件，每调用一次就发布一次事件事件
@@ -24,7 +37,7 @@ public class LongEventProducer {
 
         try {
             //用上面的索引取出一个空的事件用于填充
-            LongEvent event = ringBuffer.get(sequence);
+            LongEvent event = (LongEvent) ringBuffer.get(sequence);
             event.setValue(bb.getLong(0));
         } finally {
             //发布事件

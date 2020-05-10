@@ -34,4 +34,9 @@ public class TestController {
         lockService.addThroughDisruptor();
     }
 
+    @RequestMapping("addUsingTranslate")
+    public void addUsingTranslate() {
+        lockService.addUsingTranslate();
+    }
+
 }

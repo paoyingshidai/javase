@@ -50,6 +50,11 @@ public class LockService {
         longEventProducer.onData(bb);
     }
 
+    public void addUsingTranslate() {
+        ByteBuffer bb = ByteBuffer.allocate(8);
+        bb.putLong(0, 1L);
+        longEventProducer.onDataTranslate(bb);
+    }
 
     public Integer getCount() {
         return content.getCount();

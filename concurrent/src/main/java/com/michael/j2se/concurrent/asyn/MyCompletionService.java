@@ -5,9 +5,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * CompletionService是Java8的新增接口，JDK为其提供了一个实现类ExecutorCompletionService。这个类是为线程池中Task的执行结果服务的，
@@ -17,33 +21,48 @@ public class MyCompletionService {
 
     public static void main(String[] args) {
 
-        ExecutorService exs = Executors.newFixedThreadPool(5);
-        try {
-            int taskCount = 10;
-            List<Integer> list = new ArrayList<>();
+        ExecutorService exs = Executors.newCachedThreadPool();
+        int taskCount = 10;
+        List<Integer> list = new ArrayList<>();
 
+        long start = System.currentTimeMillis();
+
+        Future<?> future = exs.submit(() -> {
             CompletionService<Integer> completionService = new ExecutorCompletionService<>(exs);
 
             for (int i = 0; i < taskCount; i++) {
                 completionService.submit(new Task(i + 1));
             }
 
-            long start = System.currentTimeMillis();
 
             for (int i = 0; i < taskCount; i++) {
-                Integer result = completionService.take().get();
+                try {
+                    Integer result = completionService.take().get(3, TimeUnit.SECONDS);
+//                Integer result = completionService.poll(3, TimeUnit.SECONDS).get();
 //                System.out.println("任务i==" + result + "完成!" + new Date());
-                list.add(result);
+                    list.add(result);
+                } catch (Exception e) {
+                    System.out.println("执行超时");
+                }
             }
 
-            System.out.println("执行时间：" + (System.currentTimeMillis() - start));
+        });
 
-            System.out.println("list=" + list);
-        } catch (Exception e) {
+        try {
+            future.get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            exs.shutdown();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
         }
+
+        System.out.println("执行时间：" + (System.currentTimeMillis() - start));
+
+        System.out.println("list=" + list);
+
+        exs.shutdown();
     }
 
     static class Task implements Callable<Integer> {
@@ -57,7 +76,7 @@ public class MyCompletionService {
         @Override
         public Integer call() throws Exception {
             if (i == 5) {
-                Thread.sleep(5000);
+                Thread.sleep(15000);
             } else {
                 Thread.sleep(1000);
             }
