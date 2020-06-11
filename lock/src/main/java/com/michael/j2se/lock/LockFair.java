@@ -21,7 +21,7 @@ public class LockFair implements Runnable {
 
     @Override
     public void run() {
-        while (true){
+        while (true) {
             lock.lock();
             try {
                 if (currentIndex < 100) {
@@ -44,19 +44,20 @@ public class LockFair implements Runnable {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
 
-        Runnable runnable  = () -> {
+        Runnable runnable = () -> {
 
             while (currentIndex3 <= 100) {
-                lock.lock();
-                condition.signal();
-                System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
-
                 try {
+                    lock.lock();
+                    condition.signal();
+                    System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
+
                     condition.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                } finally {
+                    lock.unlock();
                 }
-                lock.unlock();
             }
         };
         Thread t1 = new Thread(runnable);
@@ -77,14 +78,14 @@ public class LockFair implements Runnable {
         Condition condition2 = lock.newCondition();
         Condition condition3 = lock.newCondition();
 
-        Runnable runnable1  = () -> {
+        Runnable runnable1 = () -> {
             while (currentIndex3 <= 100) {
                 lock.lock();
                 condition1.signal();
                 System.out.println("当前值：" + currentIndex3++ + ", " + Thread.currentThread().getName() + " 获得锁");
 
                 try {
-//                    condition1.await();   // 这个 await() 调用了多次，需要 singnal 多次
+//                    condition1.await();   // 这个 await() 调用了多次，需要 signal 多次
                     condition2.signal();
                     condition3.await();
                 } catch (InterruptedException e) {
@@ -94,7 +95,7 @@ public class LockFair implements Runnable {
             }
         };
 
-        Runnable runnable2  = () -> {
+        Runnable runnable2 = () -> {
             while (currentIndex3 <= 100) {
                 lock.lock();
                 condition2.signal();
@@ -111,7 +112,7 @@ public class LockFair implements Runnable {
             }
         };
 
-        Runnable runnable3  = () -> {
+        Runnable runnable3 = () -> {
             while (currentIndex3 <= 100) {
                 lock.lock();
                 condition3.signal();
@@ -138,18 +139,17 @@ public class LockFair implements Runnable {
 
     /**
      * 交替打印 1 —— 100， 不使用 ReentranLock 公平锁;
-     *
-     *  notify(); 与 condition#signal() 有同样的作用，但是condition更有利于线程之间的通信，
-     *  调用更加灵活
-     *
+     * <p>
+     * notify(); 与 condition#signal() 有同样的作用，但是condition更有利于线程之间的通信，
+     * 调用更加灵活
      */
     public void print() {
 
-        Runnable runnable  = new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
 
-                while(currentIndex2 <= 100) {
+                while (currentIndex2 <= 100) {
 
                     synchronized (this) {
 
@@ -182,13 +182,14 @@ public class LockFair implements Runnable {
 
     /**
      * 通过信号量来交替打印
+     *
      * @param semaphore
      * @param oSemaphore
      * @return
      */
     public static Thread method(Semaphore semaphore, Semaphore oSemaphore) {
 
-        Runnable runnable  = new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 try {
@@ -214,6 +215,7 @@ public class LockFair implements Runnable {
 
 
     static Integer ai = new Integer(0);
+
     public static void method2(boolean b) {
         new Thread(() -> {
             while (true) {
@@ -246,7 +248,8 @@ public class LockFair implements Runnable {
 
 
     static int val = 0;
-    public static void main(String []args) {
+
+    public static void main(String[] args) {
 
         LockFair lockFairTest = new LockFair();
 
