@@ -47,11 +47,11 @@ public class ScheduleTest {
         ScheduledFuture<?> schedule = executorService.schedule(() -> {
             System.out.println(Thread.currentThread().getName());
             System.out.println("Michael");
-        }, 3, TimeUnit.SECONDS);
+        }, 10, TimeUnit.SECONDS);
 
 //        schedule.cancel(false);
 
-        new CountDownLatch(1).await(4, TimeUnit.SECONDS);
+        new CountDownLatch(1).await(11, TimeUnit.SECONDS);
 
         System.out.println("done");
     }
