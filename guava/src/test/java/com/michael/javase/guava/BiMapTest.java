@@ -36,6 +36,7 @@ public class BiMapTest {
         private Integer age;
         private String username;
 
+        // TODO 重写 equals 必须要重写 hash 方法
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof User) {
