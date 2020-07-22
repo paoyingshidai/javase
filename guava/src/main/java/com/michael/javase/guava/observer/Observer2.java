@@ -1,5 +1,6 @@
 package com.michael.javase.guava.observer;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 /**
@@ -8,6 +9,7 @@ import com.google.common.eventbus.Subscribe;
 public class Observer2 {
 
     @Subscribe
+    @AllowConcurrentEvents
     public void ob2Method1(String msg) {
         System.out.println(msg + " test3!");
     }
