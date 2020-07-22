@@ -8,10 +8,21 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.junit.Test;
 
+import java.security.SecureRandom;
+
 /**
  * @auth Michael
  */
 public class BiMapTest {
+
+    @Test
+    public void testRandom() {
+
+        for (int i = 0; i < 100; i++) {
+            System.out.println(new SecureRandom().nextInt(10) + 1);
+        }
+
+    }
 
     @Test
     public void biMapTest() {
@@ -20,9 +31,6 @@ public class BiMapTest {
         User user = new User(12, "username");
         map.put(user.getUsername(), user);
 
-        User ret = map.get(user.getUsername());
-        System.out.println(ret);
-        
         user.setUsername("user");
 
         String username = map.inverse().get(user);
