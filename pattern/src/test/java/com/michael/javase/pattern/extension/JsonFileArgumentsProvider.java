@@ -1,5 +1,6 @@
 package com.michael.javase.pattern.extension;
 
+import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -71,8 +72,7 @@ class JsonFileArgumentsProvider implements ArgumentsProvider, AnnotationConsumer
 
     @SneakyThrows
     private Stream<Arguments> toStream(String input) {
-        List contexts = null;
-//        = JSON.parseArray(input, targetClass);
+        List contexts = JSON.parseArray(input, targetClass);
         return contexts.stream().map(Arguments::arguments);
     }
 
