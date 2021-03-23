@@ -66,13 +66,19 @@ public class StampedLockTest {
         public void print() {
             long l = lock.tryOptimisticRead();
 
+            int x1 = x, y1 = y;
+
             try {
                 if (!lock.validate(l)) {
                     l = lock.readLock();
-                    if (x != y) {
-                        System.out.println("x = " + x + " y = " + y);
-                    }
+                    x1 = x;
+                    y1 = y;
                 }
+
+                if (x1 != y1) {
+                    System.out.println("x1 = " + x1 + " y1 = " + y1);
+                }
+
             } finally {
                 lock.unlockRead(l);
             }
