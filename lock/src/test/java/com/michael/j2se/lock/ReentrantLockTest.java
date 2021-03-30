@@ -3,6 +3,10 @@ package com.michael.j2se.lock;
 
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,9 +18,30 @@ public class ReentrantLockTest {
 
     private volatile boolean signal = false;
 
+    ExecutorService executorService = Executors.newFixedThreadPool(20);
+
     @Test
-    public void test() {
-        System.out.println("hello");
+    public void test() throws InterruptedException {
+
+        for (int i = 0; i < 10; i++) {
+            executorService.submit(() -> {
+                try {
+                    lock.lock();
+                    lock.tryLock(1, TimeUnit.SECONDS);
+                    System.out.println("hello");
+//                    TimeUnit.SECONDS.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    lock.unlock();
+                }
+            });
+        }
+
+        new CountDownLatch(1).await();
+        executorService.shutdown();
+
+
     }
 
     /**
