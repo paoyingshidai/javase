@@ -84,5 +84,6 @@
         <module>string</module>
         <module>akka</module>
 		<module>pattern</module>
-	</modules>
+        <module>bytecode</module>
+    </modules>
 </project>
